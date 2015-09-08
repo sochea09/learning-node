@@ -13,7 +13,7 @@ Import the database structure from this file: database.json
 ### To execute:
 
 ```sh
-sudo node server.js
+sudo npm start
 ```
 
 ### For more information:
