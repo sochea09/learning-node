@@ -1,4 +1,4 @@
-var Post = require('../models/post');
+var models = require('../models');
 
 var express = require('express');
 var router = express.Router();
@@ -9,7 +9,7 @@ var log = function (inst) {
 
 //get all posts
 router.get('', function(req, res){
-    Post.findAll({
+    models.Post.findAll({
         attributes: ['id', 'title'],
         where: { visible: true },
         order: '"createdAt" DESC'
@@ -21,7 +21,7 @@ router.get('', function(req, res){
 
 //get post details
 router.get('/:id', function(req, res){
-    Post.find({where: {id: req.params.id}}).then(function(posts){
+    models.Post.find({where: {id: req.params.id}}).then(function(posts){
         if(posts) {
             res.json(posts)
         }else{
@@ -35,7 +35,7 @@ router.post('', function(req, res){
     var title = req.body.title;
     var content = req.body.content;
 
-    Post.create({title: title, content: content}).then(function(){
+    models.Post.create({title: title, content: content}).then(function(){
         res.send("Post created!")
     })
 
@@ -47,7 +47,7 @@ router.post('/:id', function(req, res){
     var title = req.body.title;
     var content = req.body.content;
 
-    Post.update({title: title, content: content},{id: id}).then(function(){
+    models.Post.update({title: title, content: content},{id: id}).then(function(){
         res.send("Post updated!")
     })
 
@@ -55,7 +55,7 @@ router.post('/:id', function(req, res){
 
 //delete post
 router.post('/:id/delete', function(req, res){
-    Post.update({visible: 0},{id: req.params.id}).then(function(){
+    models.Post.update({visible: 0},{id: req.params.id}).then(function(){
         res.send("Post delete!")
     })
 })
