@@ -1,11 +1,12 @@
+
+"use strict";
+
 var models = require('../models');
+var global = require('../routes/global');
 
 var express = require('express');
 var router = express.Router();
-
-var log = function (inst) {
-    console.dir(inst.get())
-}
+var co = require('co');
 
 //get all posts
 router.get('', function(req, res){
@@ -14,29 +15,29 @@ router.get('', function(req, res){
         where: { visible: true },
         order: '"createdAt" DESC'
     }).then(function (posts) {
-            posts.forEach(log)
-            res.json(posts)
+            //show data to console
+            posts.forEach(global.log)
+            res.json(global.success(posts,''))
     })
 })
-
+co.wr
 //get post details
-router.get('/:id', function(req, res){
-    models.Post.find({where: {id: req.params.id}}).then(function(posts){
-        if(posts) {
-            res.json(posts)
-        }else{
-            res.send(401, "Post not found.")
-        }
-    })
-})
+router.get('/:id', co.wrap(function* (req, res){
+    try{
+        let posts = yield models.Post.find({where: {id: req.params.id}});
+        res.json(global.success(posts,''));
+    } catch(ex) {
+        res.send(401, global.fail('', 'Post not found.'))
+    }
+}))
 
 //create post
 router.post('', function(req, res){
     var title = req.body.title;
     var content = req.body.content;
 
-    models.Post.create({title: title, content: content}).then(function(){
-        res.send("Post created!")
+    models.Post.create({title: title, content: content}).then(function(posts){
+        res.send(201, global.success(posts,'Post created.'))
     })
 
 })
@@ -48,7 +49,7 @@ router.post('/:id', function(req, res){
     var content = req.body.content;
 
     models.Post.update({title: title, content: content},{id: id}).then(function(){
-        res.send("Post updated!")
+        res.send(global.success('', 'Post updated!'))
     })
 
 })
@@ -56,7 +57,7 @@ router.post('/:id', function(req, res){
 //delete post
 router.post('/:id/delete', function(req, res){
     models.Post.update({visible: 0},{id: req.params.id}).then(function(){
-        res.send("Post delete!")
+        res.send(global.success('', 'Post delete!'))
     })
 })
 
