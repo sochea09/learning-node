@@ -7,10 +7,12 @@ var posts  = require('./routes/posts');
 
 var app = express();
 
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+//Middleware
+middlewares = require("./middlewares");
+//app.use(middlewares.userAuth);
 
 app.use('/', routes);
 app.use('/posts', posts);
